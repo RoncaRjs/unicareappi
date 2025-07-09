@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniCare App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fdf8f0;
+      color: #001f4d;
+    }
+    .container {
+      text-align: center;
+      padding: 40px 20px 100px;
+    }
+    .logo {
+      width: 300px;
+      height: auto;
+      margin: 0 auto 20px;
+    }
+    .button-list {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn {
+      width: 90%;
+      max-width: 350px;
+      background-color: #fdf8f0;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 18px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .icono-expandido {
+      width: 24px;
+      height: 24px;
+      object-fit: cover;
+      transform: scale(1.8);
+      transform-origin: center;
+      display: inline-block;
+      border-radius: 6px;
+    }
+    .alerta {
+      background-color: #fdeacc;
+      margin: 30px auto 60px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: #7a3e00;
+      font-weight: bold;
+      width: 90%;
+      max-width: 350px;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #fff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+    .footer-item {
+      text-align: center;
+      color: #001f4d;
+      font-size: 14px;
+    }
+    .footer-item i {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .seccion {
+      display: none;
+      background-color: #ffffff;
+      padding: 24px;
+      margin-top: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+    .seccion h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #001f4d;
+    }
+    .mito, .medicamento {
+      background-color: #f4f7fb;
+      border-left: 5px solid #001f4d;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      position: relative;
+    }
+    .audio-btn {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      font-size: 14px;
+      background: #e8f0ff;
+      color: #003366;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .cuadro {
+  background-color: #f4f7fb;
+  border: 2px solid #cfd9e6;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-top: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease;
+}
+.cuadro:hover {
+  background-color: #eaf1ff;
+}
+
+  </style>
+  <script>
+    const secciones = ['sintomas', 'mitos', 'botiquin', 'directorio'];
+
+    function toggleSeccion(nombreId, nombreKey) {
+      secciones.forEach(sec => {
+        const elem = document.getElementById(`${sec}-section`) || document.getElementById(`form-${sec}`);
+        if (elem) {
+          elem.style.display = (sec === nombreKey && elem.style.display !== 'block') ? 'block' : 'none';
+        }
+      });
+
+      const target = document.getElementById(`${nombreKey}-section`) || document.getElementById(`form-${nombreKey}`);
+      if (target && target.style.display === 'block') {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function toggleMedicamentos(categoriaId) {
+      const lista = document.getElementById(categoriaId);
+      lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function reproducirAudio(id) {
+      const audio = document.getElementById(id);
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+        function analizarSintomas(event) {
+      event.preventDefault();
+      const sintoma = document.getElementById('sintoma').value;
+      const duracion = document.getElementById('duracion').value;
+      const gravedad = document.getElementById('gravedad').value;
+      const resultado = document.getElementById('resultadoSintoma');
+
+      let mensaje = "";
+
+      if (sintoma === "fiebre") {
+        if (gravedad === "grave" || duracion === "semana") {
+          mensaje = "Podría tratarse de una infección más seria que requiere atención médica inmediata. No te automediques con antibióticos y acude a un centro de salud para un diagnóstico adecuado.. 🏥";
+        } else {
+          mensaje = "La fiebre puede ser una respuesta del cuerpo ante infecciones virales o bacterianas leves. 💊 Puedes tomar Paracetamol 500 mg cada 6 a 8 horas si la temperatura es mayor a 38°C, y descansar en un ambiente fresco. También es importante hidratarte constantemente y evitar abrigarte en exceso.";
+        }
+      } else if (sintoma === "dolorCabeza") {
+        mensaje = gravedad === "grave"
+          ? "Podría tratarse de migraña o algo más serio. Puedes tomar Ibuprofeno 400 mg cada 8 horas con alimentos, o Paracetamol 500 mg si no puedes tomar antiinflamatorios. Evita el uso excesivo de pantallas, descansa en un ambiente silencioso y mantente bien hidratado.."
+          : "Si el dolor es moderado, puedes tomar Ibuprofeno 400 mg cada 8 horas con alimentos, o Paracetamol 500 mg si no puedes tomar antiinflamatorios. Evita el uso excesivo de pantallas, descansa en un ambiente silencioso y mantente bien hidratado.";
+      } else if (sintoma === "dolorAbdominal") {
+        mensaje = gravedad === "grave" || duracion === "semana"
+          ? "Un dolor abdominal severo o persistente puede ser indicio de una afección seria, como una apendicitis, infección intestinal, úlcera u otro trastorno digestivo importante. Es fundamental no automedicarse en estos casos y acudir de inmediato a un centro de salud para una evaluación médica completa. No consumas alimentos pesados ni antiinflamatorios como ibuprofeno, ya que podrían empeorar ciertos cuadros digestivos."
+          : "Si el dolor es leve y sospechas que puede ser por gases o indigestión, puedes tomar Butilhioscina (Buscapina simple) cada 8 horas, acompañada de dieta blanda y líquidos. Si el dolor no mejora, no prolongues la automedicación y consulta con un profesional.";
+      } else if (sintoma === "tos") {
+        mensaje = duracion === "semana"
+          ? "Una tos persistente o muy intensa puede indicar una infección respiratoria, bronquitis o incluso COVID-19. En estos casos, es importante que acudas a un centro médico para una evaluación y no te automediques con antibióticos sin indicación."
+          : "La tos leve puede ser causada por irritación de garganta, resfríos comunes o cambios de temperatura. Te recomendamos mantenerte bien hidratado, evitar ambientes fríos y descansar adecuadamente. 💊 Puedes tomar Ambroxol jarabe (30 mg/5ml), 1 cucharada cada 8 horas, o pastillas para la garganta a base de miel o eucalipto para aliviar la irritación.";
+      } else if (sintoma === "mareo") {
+        mensaje = gravedad === "grave"
+          ? "Un mareo intenso o repentino podría estar relacionado con alteraciones en la presión arterial, problemas neurológicos o del oído interno (como el vértigo). Si el mareo viene acompañado de visión borrosa, dificultad para hablar, desmayo o pérdida de equilibrio, debes acudir inmediatamente a un centro de salud. Evita conducir, estar solo o automedicarte sin orientación médica."
+          : "Si se trata de un mareo leve por estrés, ayuno, viaje o cansancio, puedes tomar Dimenhidrinato (Dramamine) 50 mg cada 8 horas según necesidad. Descansa en un lugar fresco, hidrátate y evita movimientos bruscos. Si el síntoma persiste más de 24 horas, busca atención médica.";
+      }
+
+      resultado.innerHTML = "<strong>Resultado:</strong><br>" + mensaje;
+      resultado.style.display = "block";
+    }
+
+  </script>
+
+</head>
+<body>
+  <div class="container">
+    <img class="logo" src="https://i.imgur.com/IueaaXf.jpeg" alt="UniCare Logo">
+
+    <div class="button-list">
+      <div class="btn" onclick="toggleSeccion('sintomas','sintomas')">
+        <img src="https://i.imgur.com/nvCvBfc.jpeg" class="icono-expandido" alt="check">
+        Síntoma Check
+      </div>
+
+      <div class="btn" onclick="toggleSeccion('mitos','mitos')">
+        <img src="https://i.imgur.com/DhhPEZR.jpeg" class="icono-expandido" alt="mitos">
+        Mitos y Verdades
+      </div>
+
+      <div class="btn" onclick="toggleSeccion('directorio','directorio')">
+        <img src="https://i.imgur.com/Rq95sF0.jpeg" class="icono-expandido" alt="directorio">
+        Directorio Salud U
+      </div>
+
+      <div class="btn" onclick="toggleSeccion('botiquin','botiquin')">
+        <img src="https://i.imgur.com/eNoLjbi.png" class="icono-expandido" alt="botiquin">
+        Mi Botiquín Responsable
+      </div>
+    </div>
+
+    <div id="mitos-section" class="seccion">
+      <h2>Mitos y Verdades 🧠</h2>
+
+      <div class="mito">
+        <strong>MITO:</strong> Tomar vitamina C evita el resfriado. <br>
+        <strong>VERDAD:</strong> Solo ayuda a reducir su duración. 🍊<br>
+        <button class="audio-btn" onclick="reproducirAudio('audioMito1')">🔊 Escuchar Audio</button>
+        <audio id="audioMito1" src="https://media.vocaroo.com/mp3/1bOpNuWtFsZe"></audio>
+      </div>
+<div class="mito">
+  <strong>MITO:</strong> Comer zanahorias mejora la vista notablemente.<br>
+  <strong>VERDAD:</strong> Aporta vitamina A, pero no mejora la vista si no tienes deficiencia. 🥕
+          <button class="audio-btn" onclick="reproducirAudio('audioMito2')">🔊 Escuchar Audio</button>
+        <audio id="audioMito2" src="https://media.vocaroo.com/mp3/18uZCkOtsCvA"></audio>
+</div>
+
+<div class="mito">
+  <strong>MITO:</strong> El azúcar causa hiperactividad en niños.<br>
+  <strong>VERDAD:</strong> No hay evidencia científica sólida que lo confirme. 🍬
+            <button class="audio-btn" onclick="reproducirAudio('audioMito3')">🔊 Escuchar Audio</button>
+        <audio id="audioMito3" src="https://media.vocaroo.com/mp3/1aduGSVoRSq4"></audio>
+</div>
+
+<div class="mito">
+  <strong>MITO:</strong> Si te truenas los dedos, te dará artritis.<br>
+  <strong>VERDAD:</strong> No hay relación directa comprobada. 👋
+              <button class="audio-btn" onclick="reproducirAudio('audioMito4')">🔊 Escuchar Audio</button>
+        <audio id="audioMito4" src="https://media.vocaroo.com/mp3/11knHevJGeWo"></audio>
+</div>
+
+<div class="mito">
+  <strong>MITO:</strong> Si no tienes síntomas, no puedes contagiar.<br>
+  <strong>VERDAD:</strong> Muchos virus se transmiten incluso sin síntomas. 🦠
+                <button class="audio-btn" onclick="reproducirAudio('audioMito5')">🔊 Escuchar Audio</button>
+        <audio id="audioMito5" src="https://media.vocaroo.com/mp3/191lpfrIzFFR"></audio>
+</div>
+
+<div class="mito">
+  <strong>MITO:</strong> Solo necesitas protector solar en verano.<br>
+  <strong>VERDAD:</strong> Los rayos UV afectan todo el año. 🌞
+                  <button class="audio-btn" onclick="reproducirAudio('audioMito6')">🔊 Escuchar Audio</button>
+        <audio id="audioMito6" src="https://media.vocaroo.com/mp3/1hoOOYqujFLZ"></audio>
+</div>
+
+<div class="mito">
+  <strong>MITO:</strong> Beber agua con limón en ayunas quema grasa.<br>
+  <strong>VERDAD:</strong> No quema grasa, pero puede ayudar a la digestión. 🍋
+                  <button class="audio-btn" onclick="reproducirAudio('audioMito7')">🔊 Escuchar Audio</button>
+        <audio id="audioMito7" src="https://media.vocaroo.com/mp3/11BBV2dtAQGH"></audio>
+</div>
+</div>
+
+    </div>
+
+    <div id="directorio-section" class="seccion">
+      <h2>Directorio Salud Universitaria 🏥📞</h2>
+      <div class="medicamento">
+        <strong>Centro Médico UCV - Lima Norte</strong><br>
+        🕐 Horario: Lunes a Viernes, 8am - 5pm<br>
+        📍 Dirección: Av. Alfredo Mendiola 6232, Los Olivos<br>
+        📞 Teléfono: (01) 618-8888<br>
+        📧 Correo: saludestudiantil@ucv.edu.pe
+      </div>
+    </div>
+
+<div id="botiquin-section" class="seccion">
+  <h2>Mi Botiquín Responsable 💊🧴</h2>
+
+  <div class="medicamento-categoria cuadro" onclick="toggleMedicamentos('analgesicos')">Analgésicos (dolor) 😣</div>
+  <div id="analgesicos" class="medicamento-lista" style="display: none;">
+    <div class="medicamento"><strong>Paracetamol:</strong> Fiebre y dolor leve.</div>
+    <div class="medicamento"><strong>Ibuprofeno:</strong> Inflamación, fiebre o dolor muscular.</div>
+    <div class="medicamento"><strong>Naproxeno:</strong> Alternativa para dolores menstruales.</div>
+  </div>
+
+  <div class="medicamento-categoria cuadro" onclick="toggleMedicamentos('digestivos')">Malestar estomacal 🤢</div>
+  <div id="digestivos" class="medicamento-lista" style="display: none;">
+    <div class="medicamento"><strong>Buscapina:</strong> Cólicos y dolor abdominal leve.</div>
+    <div class="medicamento"><strong>Sales de rehidratación:</strong> Reponen líquidos perdidos.</div>
+    <div class="medicamento"><strong>Antiácidos:</strong> Acidez o reflujo (Ej. Hidróxido de aluminio).</div>
+  </div>
+
+  <div class="medicamento-categoria cuadro" onclick="toggleMedicamentos('resfrio')">Resfrío y Alergias 🤧</div>
+  <div id="resfrio" class="medicamento-lista" style="display: none;">
+    <div class="medicamento"><strong>Loratadina:</strong> Estornudos o alergia leve.</div>
+    <div class="medicamento"><strong>Paracetamol + Fenilefrina:</strong> Síntomas gripales.</div>
+    <div class="medicamento"><strong>Ambroxol:</strong> Tos con flema.</div>
+  </div>
+
+  <div class="medicamento-categoria cuadro" onclick="toggleMedicamentos('mareos')">Mareos y Náuseas 🚢</div>
+  <div id="mareos" class="medicamento-lista" style="display: none;">
+    <div class="medicamento"><strong>Dimenhidrinato (Dramamine):</strong> Ideal para viajes.</div>
+  </div>
+
+  <div class="medicamento-categoria cuadro" onclick="toggleMedicamentos('primerosAuxilios')">Primeros auxilios 🩹</div>
+  <div id="primerosAuxilios" class="medicamento-lista" style="display: none;">
+    <div class="medicamento"><strong>Alcohol 70%:</strong> Limpieza de heridas pequeñas.</div>
+    <div class="medicamento"><strong>Povidona:</strong> Antiséptico tópico.</div>
+    <div class="medicamento"><strong>Vendas, gasas y curitas:</strong> Para primeros auxilios simples.</div>
+  </div>
+
+  <div class="medicamento-categoria cuadro" onclick="toggleMedicamentos('consejos')">Consejos de uso responsable 📌</div>
+  <div id="consejos" class="medicamento-lista" style="display: none;">
+    <div class="medicamento">🚫 No uses antibióticos sin receta.</div>
+    <div class="medicamento">📆 Revisa fechas de vencimiento.</div>
+    <div class="medicamento">🌡️ Guarda en lugar seco y fresco.</div>
+    <div class="medicamento">👩‍⚕️ Consulta si el síntoma persiste o empeora.</div>
+  </div>
+</div>
+
+<div id="sintomas-section" class="seccion">
+  <h2>👩‍⚕️ Síntoma Check Interactivo</h2>
+  <form id="form-sintomas" onsubmit="analizarSintomas(event)" style="display: flex; flex-direction: column; gap: 16px;">
+    
+    <div style="background: #f4f7fb; padding: 16px; border-radius: 12px;">
+      <label for="sintoma" style="font-weight: bold;">1. ¿Qué síntomas tienes?</label><br>
+      <select id="sintoma" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-top: 8px;">
+        <option value="">Selecciona un síntoma</option>
+        <option value="fiebre">Fiebre</option>
+        <option value="dolorCabeza">Dolor de cabeza</option>
+        <option value="dolorAbdominal">Dolor abdominal</option>
+        <option value="tos">Tos</option>
+        <option value="mareo">Mareo</option>
+      </select>
+    </div>
+
+    <div style="background: #f4f7fb; padding: 16px; border-radius: 12px;">
+      <label for="duracion" style="font-weight: bold;">2. ¿Desde cuándo lo tienes?</label><br>
+      <select id="duracion" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-top: 8px;">
+        <option value="">Selecciona duración</option>
+        <option value="hoy">Desde hoy</option>
+        <option value="2dias">Hace 2-3 días</option>
+        <option value="semana">Hace más de una semana</option>
+      </select>
+    </div>
+
+    <div style="background: #f4f7fb; padding: 16px; border-radius: 12px;">
+      <label for="gravedad" style="font-weight: bold;">3. ¿Qué tan grave lo sientes?</label><br>
+      <select id="gravedad" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-top: 8px;">
+        <option value="">Selecciona gravedad</option>
+        <option value="leve">Leve</option>
+        <option value="moderado">Moderado</option>
+        <option value="grave">Grave</option>
+      </select>
+    </div>
+
+    <button type="submit" style="padding: 12px; font-size: 16px; background-color: #003366; color: white; border: none; border-radius: 10px; cursor: pointer;">
+      🔍 Analizar síntomas
+    </button>
+  </form>
+
+  <div id="resultadoSintoma" style="margin-top: 20px; padding: 16px; background-color: #d9f0ff; border-left: 5px solid #0077cc; border-radius: 12px; display: none;"></div>
+</div>
+
+
+    <div class="alerta">¡Nueva campaña #NoTeAutomediques!</div>
+  </div>
+
+  <footer>
+    <div class="footer-item">
+      <i class="fas fa-home"></i>
+      Home
+    </div>
+    <div class="footer-item">
+      <i class="fas fa-user"></i>
+      Perfil
+    </div>
+  </footer>
+</body>
+</html>
+
